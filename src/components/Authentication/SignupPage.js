@@ -1,5 +1,5 @@
-import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack, useToast } from '@chakra-ui/react'
+import React, { useState } from 'react';
 
 const SignupPage = () => {
 
@@ -10,6 +10,8 @@ const SignupPage = () => {
     const [password, setPassword] = useState();
     const [confirmPassword, setConfirmPassword] = useState();
     const [pic, setPic] = useState();
+    const [loading, setLoading] = useState(false);
+    const toast = useToast();
 
     const handleClick1 = () => {
         setShow1(!show1);
@@ -19,8 +21,49 @@ const SignupPage = () => {
       setShow2(!show2);
   }
 
-    const postDetails = (pic) => {
+    const postDetails = (pics) => {
+      setLoading(true);
 
+      if(pics === undefined) {
+        toast({
+          title: 'Please Select an Image!',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        });
+        return;
+      }
+
+      if(pics.type === 'image/jpeg' || pics.type === 'image/png') {
+        const data = new FormData();
+        data.append('file', pics);
+        data.append('upload_preset', 'chat app');
+        data.append('cloud_name', 'ddgzguuxt');
+        fetch("https://api.cloudinary.com/v1_1/ddgzguuxt/image/upload", {
+          method: "post",
+          body: data,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setPic(data.url.toSting());
+            setLoading(false);
+          })
+            .catch((err) => {
+              console.log(err);
+              setLoading(false);
+            })
+      } else {
+        toast({
+          title: 'Please Select an Image!',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        });
+        setLoading(false);
+        return;
+      }
     }
 
     const sumbitHandler = () => {
@@ -99,6 +142,7 @@ const SignupPage = () => {
         color='white'
         style={{ marginTop: 15 }}
         onClick={sumbitHandler}
+        isLoading={loading}
       >
         Sign Up
       </Button>
