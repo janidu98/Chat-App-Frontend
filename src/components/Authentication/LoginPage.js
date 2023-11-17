@@ -1,21 +1,70 @@
-import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack, useToast } from '@chakra-ui/react';
+import axios from 'axios';
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
     const [show1, setShow1] = useState(false);
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
+    const toast = useToast();
+    const [loading, setLoading] = useState(false);
+    const { navigate } = useNavigate();
 
     const handleClick1 = () => {
         setShow1(!show1);
     }
 
-    const postDetails = (pic) => {
+    const sumbitHandler = async() => {
+      setLoading(true);
 
-    }
+      if(!email || !password) {
+        toast({
+          title: "All fields are required!",
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        })
+        setLoading(false);
+        return;
+      }
 
-    const sumbitHandler = () => {
+      try {
+        
+        const config = {
+          headers: {
+            "Content-type" : "application/json",
+          },
+        };
 
+        const { data } = await axios.post("/api/user/login", { email, password }, config);
+
+        //Login successful msg
+        toast({
+          title: "Login successful",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "bottom",
+        });
+
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        setLoading(false);
+
+        navigate.push("/chats");
+
+      } catch (error) {
+        toast({
+          title: "Login Error!",
+          description: error.description.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "bottom",
+        });
+        setLoading(false);
+      }
     }
 
   return (
@@ -26,6 +75,7 @@ const LoginPage = () => {
         <Input 
             type='email'
             placeholder="Enter Your Email"
+            value={email}
             _placeholder={{ opacity: 1, color: 'gray.500' }}
             onChange={(e) => setEmail(e.target.value)}
             color="black"
@@ -37,6 +87,7 @@ const LoginPage = () => {
             <InputGroup>
                 <Input 
                     type={show1 ? "text" : "password"}
+                    value={password}
                     placeholder='Enter Password'
                     _placeholder={{ opacity: 1, color: 'gray.500' }}
                     onChange={(e) => setPassword(e.target.value)}
@@ -55,8 +106,23 @@ const LoginPage = () => {
         color='white'
         style={{ marginTop: 15 }}
         onClick={sumbitHandler}
+        isLoading={loading}
       >
         Login
+      </Button>
+
+      {/* Login as Guest User */}
+      <Button
+        variant='solid'
+        colorScheme='red'
+        width='100%'
+        color= 'white'
+        onClick={() => {
+          setEmail("guest@example.com");
+          setPassword("12345");
+        }}
+      >
+        Get Guest User Credentials
       </Button>
     </VStack>
   )

@@ -1,6 +1,7 @@
 import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack, useToast } from '@chakra-ui/react'
 import React, { useState } from 'react';
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom';
 
 const SignupPage = () => {
 
@@ -13,6 +14,7 @@ const SignupPage = () => {
     const [pic, setPic] = useState();
     const [loading, setLoading] = useState(false);
     const toast = useToast();
+    const navigate = useNavigate();
 
     const handleClick1 = () => {
         setShow1(!show1);
@@ -113,8 +115,21 @@ const SignupPage = () => {
           position: 'bottom',
         });
 
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        setLoading(false);
+
+        navigate.push("/chats");
+
       } catch (error) {
-        
+        toast({
+          title: 'Error Occured!!',
+          description: error.response.data.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        });
+        setLoading(false);
       }
     }
 
