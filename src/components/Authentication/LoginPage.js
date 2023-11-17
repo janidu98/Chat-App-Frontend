@@ -21,7 +21,7 @@ const LoginPage = () => {
   return (
     <VStack spacing="5px" color="black">
 
-      <FormControl id="emial" isRequired>
+      <FormControl id="emial2" isRequired>
         <FormLabel>Email</FormLabel>
         <Input 
             type='email'
@@ -32,7 +32,7 @@ const LoginPage = () => {
         />
       </FormControl>
 
-      <FormControl id="password" isRequired>
+      <FormControl id="password2" isRequired>
         <FormLabel>Password</FormLabel>
             <InputGroup>
                 <Input 

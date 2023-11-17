@@ -1,5 +1,6 @@
 import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack, useToast } from '@chakra-ui/react'
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const SignupPage = () => {
 
@@ -38,15 +39,17 @@ const SignupPage = () => {
       if(pics.type === 'image/jpeg' || pics.type === 'image/png') {
         const data = new FormData();
         data.append('file', pics);
-        data.append('upload_preset', 'chat app');
+        data.append('upload_preset', 'chat-app');
         data.append('cloud_name', 'ddgzguuxt');
         fetch("https://api.cloudinary.com/v1_1/ddgzguuxt/image/upload", {
+          //mode: 'no-cors',
           method: "post",
           body: data,
         })
           .then((res) => res.json())
           .then((data) => {
-            setPic(data.url.toSting());
+            setPic(data.url.toString());
+            console.log(data);
             setLoading(false);
           })
             .catch((err) => {
@@ -66,8 +69,53 @@ const SignupPage = () => {
       }
     }
 
-    const sumbitHandler = () => {
+    const sumbitHandler = async() => {
+      setLoading(true);
 
+      if(!name || !email || !password || !confirmPassword){
+        toast({
+          title: 'All Fields are required!',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        });
+        setLoading(false);
+        return;
+      }
+
+      if(password !== confirmPassword) {
+        toast({
+          title: 'Passwords Do Not Match!',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        });
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const config = {
+          headers: {
+            'Content-type': 'application/json',
+          }
+        }
+
+        const {data} = await axios.post("/api/user", {name, email, password, pic}, config);
+
+        toast({
+          title: 'Registration Success',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        });
+
+      } catch (error) {
+        
+      }
     }
 
   return (
@@ -82,7 +130,7 @@ const SignupPage = () => {
         />
       </FormControl>
 
-      <FormControl id="emial" isRequired>
+      <FormControl id="emial1" isRequired>
         <FormLabel>Email</FormLabel>
         <Input 
             type='email'
@@ -92,7 +140,7 @@ const SignupPage = () => {
         />
       </FormControl>
 
-      <FormControl id="password" isRequired>
+      <FormControl id="password1" isRequired>
         <FormLabel>Password</FormLabel>
             <InputGroup>
                 <Input 
