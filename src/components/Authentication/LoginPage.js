@@ -9,7 +9,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState();
     const toast = useToast();
     const [loading, setLoading] = useState(false);
-    const { navigate } = useNavigate();
+    const navigate = useNavigate();
 
     const handleClick1 = () => {
         setShow1(!show1);
@@ -57,7 +57,7 @@ const LoginPage = () => {
       } catch (error) {
         toast({
           title: "Login Error!",
-          description: error.description.data.message,
+          description: error.description.data,
           status: "error",
           duration: 3000,
           isClosable: true,
