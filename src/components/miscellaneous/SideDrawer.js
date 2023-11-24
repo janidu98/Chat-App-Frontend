@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, Input, Menu, MenuButton, MenuItem, MenuList, Text, Tooltip, useDisclosure, useToast } from '@chakra-ui/react'
+import { Avatar, Box, Button, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, Input, Menu, MenuButton, MenuItem, MenuList, Spinner, Text, Tooltip, useDisclosure, useToast } from '@chakra-ui/react'
 import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import React, { useState } from 'react'
 import { ChatState } from '../../Context/ChatProvider';
@@ -16,7 +16,7 @@ const SideDrawer = () => {
   const [loadingChat, setLoadingChat] = useState();
   const navigate = useNavigate();
 
-  const { user } = ChatState();
+  const { user, setSelectedChat, chats, setChats } = ChatState();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -64,8 +64,38 @@ const SideDrawer = () => {
     }
   }
 
-  const accessChat = (userId) => {
+  const accessChat = async(userId) => {
+    try {
+        setLoadingChat(true);
 
+        const config = {
+            headers: {
+                "Content-type": "application/json",
+                Authorization: `Bearer ${user.token}`,
+            },
+        };
+
+        //create new chat
+        const { data } = await axios.post('/api/chat', {userId}, config);
+
+        if(!chats.find((chat) => chat._id === data._id)){
+            setChats([data, ...chats]);
+        }
+
+        setSelectedChat(data);
+        setLoadingChat(false);
+        onClose();
+
+    } catch (error) {
+        toast({
+            title: 'Error fetching chats!',
+            description: error.message,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'bottom-left'
+        });
+    }
   }
 
   return (  
@@ -138,6 +168,7 @@ const SideDrawer = () => {
                             />
                         ))
                     )}
+                    {loadingChat && <Spinner ml='auto' display='flex'/>}
                 </DrawerBody>
             </DrawerContent>
         </Drawer>
