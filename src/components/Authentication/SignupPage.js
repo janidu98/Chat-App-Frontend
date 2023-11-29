@@ -139,6 +139,7 @@ const SignupPage = () => {
         <FormLabel>Name</FormLabel>
         <Input 
             placeholder='Enter Your Name'
+            value={name}
             _placeholder={{ opacity: 1, color: 'gray.500' }}
             variant='outline'
             onChange={(e) => setName(e.target.value)}
@@ -149,6 +150,7 @@ const SignupPage = () => {
         <FormLabel>Email</FormLabel>
         <Input 
             type='email'
+            value={email}
             placeholder='Enter Your Email'
             _placeholder={{ opacity: 1, color: 'gray.500' }}
             onChange={(e) => setEmail(e.target.value)}
@@ -160,6 +162,7 @@ const SignupPage = () => {
             <InputGroup>
                 <Input 
                     type={show1 ? "text" : "password"}
+                    value={password}
                     placeholder='Enter New Password'
                     onChange={(e) => setPassword(e.target.value)}
                     _placeholder={{ opacity: 1, color: 'gray.500' }}
@@ -177,6 +180,7 @@ const SignupPage = () => {
             <InputGroup>
                 <Input 
                     type={show2 ? "text" : "password"}
+                    value={confirmPassword}
                     placeholder='Enter Password Again'
                     _placeholder={{ opacity: 1, color: 'gray.500' }}
                     onChange={(e) => setConfirmPassword(e.target.value)}
