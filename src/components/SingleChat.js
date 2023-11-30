@@ -22,7 +22,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
 
   const toast = useToast();
 
@@ -71,10 +71,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     selectedChatCompare = selectedChat;
   }, [selectedChat]);
 
+//   console.log(notification, '//////////////////////////'); 
+
   useEffect(() => {
     socket.on('message recieved', (newMessageRecieved) => {
         if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
-            //give notificatioin
+            if(!notification.includes(newMessageRecieved)) {
+                setNotification([newMessageRecieved, ...notification]);
+                setFetchAgain(!fetchAgain);
+            }
         } else {
             setMessages([...messages, newMessageRecieved]);
         }
@@ -83,7 +88,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async(event) => {
     if(event.key === 'Enter' && newMessage) {
+
         socket.emit('stop typing', selectedChat._id);
+
         try {
             const config = {
                 headers: {
@@ -192,6 +199,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 h='100%'
                 borderRadius='lg'
                 overflow='hidden'
+                onScroll='true'
             >
                 {loading ? (
                     <Spinner 
